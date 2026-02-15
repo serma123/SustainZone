@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (mobileTocLabel && labelMap[id]) mobileTocLabel.textContent = labelMap[id];
             }
         });
-    }, { rootMargin: '-20% 0px -60% 0px', threshold: 0.1 });
+    }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
 
     sections.forEach(function (id) {
         var el = document.getElementById(id);
