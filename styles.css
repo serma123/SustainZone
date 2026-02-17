@@ -283,3 +283,60 @@ body {
         background-position: 0 0, 100% 50%;
     }
 }
+
+/* Comparison Carousel */
+.carousel-container {
+    overflow: hidden;
+    position: relative;
+    padding: 1rem 0;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 1.5rem;
+}
+
+.carousel-card {
+    flex: 0 0 100%;
+    min-width: 0;
+}
+
+@media (min-width: 640px) {
+    .carousel-card {
+        flex: 0 0 calc(50% - 0.75rem);
+    }
+}
+
+@media (min-width: 1024px) {
+    .carousel-card {
+        flex: 0 0 calc(33.333% - 1rem);
+    }
+}
+
+.carousel-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+}
+
+.carousel-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.carousel-nav-btn:not(:disabled):hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-dot {
+    transition: all 0.3s ease;
+}
+
+.carousel-dot.active {
+    width: 1.5rem;
+    background-color: #16a34a;
+}

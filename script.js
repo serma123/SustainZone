@@ -314,4 +314,107 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ---- Generic Carousel Logic ----
+    function setupCarousel(containerSelector, trackSelector, prevBtnSelector, nextBtnSelector, dotsContainerSelector) {
+        var container = document.querySelector(containerSelector);
+        if (!container) return;
+
+        var track = container.querySelector(trackSelector);
+        var prevBtn = container.querySelector(prevBtnSelector);
+        var nextBtn = container.querySelector(nextBtnSelector);
+        var dotsContainer = container.querySelector(dotsContainerSelector);
+        var dots = dotsContainer ? dotsContainer.querySelectorAll('.carousel-dot') : [];
+        var cards = track.querySelectorAll('.carousel-card');
+
+        var currentIndex = 0;
+        var totalCards = cards.length;
+
+        if (totalCards === 0) return;
+
+        function getCardsPerView() {
+            if (window.innerWidth >= 1024) return 3;
+            if (window.innerWidth >= 640) return 2;
+            return 1;
+        }
+
+        function updateCarousel() {
+            var cardsPerView = getCardsPerView();
+            var maxIndex = Math.max(0, totalCards - cardsPerView);
+
+            // Clamp index
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex > maxIndex) currentIndex = maxIndex;
+
+            var cardWidth = cards[0].offsetWidth;
+            var style = window.getComputedStyle(track);
+            var gapVal = parseFloat(style.gap) || 0;
+
+            var moveAmount = (cardWidth + gapVal) * currentIndex;
+            track.style.transform = 'translateX(-' + moveAmount + 'px)';
+
+            // Update UI
+            if (prevBtn) prevBtn.disabled = currentIndex === 0;
+            if (nextBtn) nextBtn.disabled = currentIndex === maxIndex;
+
+            dots.forEach(function (dot, index) {
+                var isActive = index === currentIndex;
+                dot.classList.toggle('active', isActive);
+                // Handle tailwind classes if they were used for color override
+                if (isActive) {
+                    dot.classList.remove('bg-slate-300');
+                    dot.classList.add('bg-emerald-500');
+                } else {
+                    dot.classList.add('bg-slate-300');
+                    dot.classList.remove('bg-emerald-500');
+                }
+            });
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function () {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateCarousel();
+                }
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
+                var cardsPerView = getCardsPerView();
+                var maxIndex = Math.max(0, totalCards - cardsPerView);
+                if (currentIndex < maxIndex) {
+                    currentIndex++;
+                    updateCarousel();
+                }
+            });
+        }
+
+        dots.forEach(function (dot) {
+            dot.addEventListener('click', function () {
+                var idx = parseInt(this.dataset.index);
+                var cardsPerView = getCardsPerView();
+                var maxIndex = Math.max(0, totalCards - cardsPerView);
+                if (idx > maxIndex) idx = maxIndex;
+                currentIndex = idx;
+                updateCarousel();
+            });
+        });
+
+        window.addEventListener('resize', function () {
+            // Re-clamp index on resize
+            var cardsPerView = getCardsPerView();
+            var maxIndex = Math.max(0, totalCards - cardsPerView);
+            if (currentIndex > maxIndex) currentIndex = maxIndex;
+            updateCarousel();
+        });
+
+        // Initial update
+        setTimeout(updateCarousel, 100);
+    }
+
+    // Initialize Carousels
+    setupCarousel('[data-testid="carousel-comparison"]', '#comparison-track', '#prev-btn', '#next-btn', '#carousel-dots');
+    setupCarousel('[data-testid="carousel-compliance"]', '#compliance-track', '#prev-btn-comp', '#next-btn-comp', '#compliance-dots');
+
 });
